@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${PGPASSWORD:-Urja@2026!}
+      POSTGRES_DB: urja_whatsapp
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DB_MODE: postgres
+      PGHOST: db
+      PGPORT: 5432
+      PGDATABASE: urja_whatsapp
+      PGUSER: postgres
+      PGPASSWORD: ${PGPASSWORD:-Urja@2026!}
+      JWT_SECRET: ${JWT_SECRET:-change_me_in_production}
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost:3001}
+      APP_URL: ${APP_URL:-http://localhost:3001}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    depends_on:
+      - db
+
+volumes:
+  pgdata:

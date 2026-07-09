@@ -1,0 +1,6 @@
+{
+  "name": "WhatsApp Customer Engagement & Campaign Platform",
+  "description": "An advanced enterprise platform for high-volume WhatsApp campaign management, real-time customer conversation inboxes, automated chatbot flow builder, role-based controls, and detailed performance analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

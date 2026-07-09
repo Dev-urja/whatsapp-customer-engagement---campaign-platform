@@ -1,0 +1,512 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-urja-primary: #ef7f21;
+  --color-urja-secondary: #ffb679;
+  --color-urja-accent: #ffe1c7;
+  --color-urja-yellow: #ffe400;
+  --color-urja-navy: #231f61;
+
+  /* Semantic app tokens (light defaults) */
+  --color-app-bg: #f8fafc;
+  --color-app-surface: #ffffff;
+  --color-app-surface-raised: #ffffff;
+  --color-app-surface-muted: #f1f5f9;
+  --color-app-border: #e2e8f0;
+  --color-app-border-strong: #cbd5e1;
+  --color-app-text: #0f172a;
+  --color-app-text-secondary: #475569;
+  --color-app-text-muted: #64748b;
+  --color-app-input-bg: #ffffff;
+}
+
+/* ── Light theme base ── */
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --color-app-bg: #13121f;
+  --color-app-surface: #1c1b2a;
+  --color-app-surface-raised: #252436;
+  --color-app-surface-muted: #161525;
+  --color-app-border: #34334a;
+  --color-app-border-strong: #45435f;
+  --color-app-text: #f4f4f8;
+  --color-app-text-secondary: #c4c3d4;
+  --color-app-text-muted: #8b8aa3;
+  --color-app-input-bg: #12111d;
+  --color-urja-accent: #3d2a1a;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.25); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(156, 163, 175, 0.45); }
+.dark ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.18); }
+.dark ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.32); }
+
+.custom-canvas-pattern {
+  background-size: 20px 20px;
+  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.1) 1px, transparent 1px);
+}
+.dark .custom-canvas-pattern {
+  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+}
+
+/* ── App shell ── */
+#main-application-frame {
+  background-color: var(--color-app-bg);
+  color: var(--color-app-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+#main-application-frame .app-header {
+  background-color: var(--color-app-surface);
+  border-color: var(--color-app-border);
+}
+
+#main-application-frame .app-content {
+  background-color: var(--color-app-bg);
+}
+
+/* Surfaces */
+.dark #main-application-frame .bg-white {
+  background-color: var(--color-app-surface);
+}
+
+.dark #main-application-frame .bg-slate-50,
+.dark #main-application-frame .bg-slate-50\/50 {
+  background-color: var(--color-app-surface-muted);
+}
+
+.dark #main-application-frame .bg-slate-100 {
+  background-color: var(--color-app-surface-raised);
+}
+
+/* Borders */
+.dark #main-application-frame .border-slate-100,
+.dark #main-application-frame .border-slate-150,
+.dark #main-application-frame .border-slate-200,
+.dark #main-application-frame .border-slate-205,
+.dark #main-application-frame .border-slate-300 {
+  border-color: var(--color-app-border);
+}
+
+/* Typography */
+.dark #main-application-frame .text-slate-900,
+.dark #main-application-frame .text-slate-850,
+.dark #main-application-frame .text-slate-800,
+.dark #main-application-frame .text-slate-705 {
+  color: var(--color-app-text);
+}
+
+.dark #main-application-frame .text-slate-700,
+.dark #main-application-frame .text-slate-600,
+.dark #main-application-frame .text-slate-505 {
+  color: var(--color-app-text-secondary);
+}
+
+.dark #main-application-frame .text-slate-500,
+.dark #main-application-frame .text-slate-450,
+.dark #main-application-frame .text-slate-400,
+.dark #main-application-frame .text-slate-350 {
+  color: var(--color-app-text-muted);
+}
+
+/* Form controls */
+.dark #main-application-frame input:not([type='checkbox']):not([type='radio']),
+.dark #main-application-frame textarea,
+.dark #main-application-frame select {
+  background-color: var(--color-app-input-bg);
+  color: var(--color-app-text);
+  border-color: var(--color-app-border);
+}
+
+.dark #main-application-frame input::placeholder,
+.dark #main-application-frame textarea::placeholder {
+  color: #63627a;
+}
+
+/* Hover states */
+.dark #main-application-frame .hover\:bg-slate-50:hover {
+  background-color: var(--color-app-surface-raised);
+}
+
+.dark #main-application-frame .hover\:bg-slate-100:hover,
+.dark #main-application-frame .hover\:bg-slate-150:hover,
+.dark #main-application-frame .hover\:bg-slate-200:hover {
+  background-color: #2f2e42;
+}
+
+/* Tables */
+.dark #main-application-frame thead.bg-slate-50 {
+  background-color: var(--color-app-surface-muted);
+}
+
+.dark #main-application-frame .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+.dark #main-application-frame .divide-y.divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--color-app-border);
+}
+
+/* Tab / pill switchers (active = white in light) */
+.dark #main-application-frame .bg-slate-100 .bg-white,
+.dark #main-application-frame .bg-slate-100.p-1\.5 .bg-white,
+.dark #main-application-frame .bg-slate-100.p-1 .bg-white {
+  background-color: var(--color-app-surface-raised);
+  color: var(--color-app-text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.dark #main-application-frame .bg-slate-100 button:not(.bg-white) {
+  color: var(--color-app-text-muted);
+}
+
+.dark #main-application-frame .bg-slate-100 button:not(.bg-white):hover {
+  color: var(--color-app-text);
+}
+
+/* Urja yellow banners → warm amber tint in dark */
+.dark #main-application-frame .bg-urja-yellow {
+  background-color: rgba(239, 127, 33, 0.16);
+  border-color: rgba(239, 127, 33, 0.35) !important;
+}
+
+.dark #main-application-frame .bg-urja-yellow.text-slate-900,
+.dark #main-application-frame .bg-urja-yellow .text-slate-900 {
+  color: #ffd9b0;
+}
+
+.dark #main-application-frame .bg-urja-yellow .text-urja-primary {
+  color: #ffb679;
+}
+
+/* Status badge backgrounds */
+.dark #main-application-frame .bg-emerald-50 { background-color: rgba(16, 185, 129, 0.14); }
+.dark #main-application-frame .bg-red-50 { background-color: rgba(239, 68, 68, 0.14); }
+.dark #main-application-frame .bg-rose-50 { background-color: rgba(244, 63, 94, 0.14); }
+.dark #main-application-frame .bg-amber-50 { background-color: rgba(245, 158, 11, 0.14); }
+.dark #main-application-frame .bg-indigo-50 { background-color: rgba(99, 102, 241, 0.14); }
+.dark #main-application-frame .bg-indigo-100 { background-color: rgba(99, 102, 241, 0.2); }
+.dark #main-application-frame .bg-teal-50 { background-color: rgba(20, 184, 166, 0.14); }
+.dark #main-application-frame .bg-blue-50 { background-color: rgba(59, 130, 246, 0.14); }
+.dark #main-application-frame .bg-orange-50 { background-color: rgba(249, 115, 22, 0.14); }
+
+/* Status text — brighter on dark */
+.dark #main-application-frame .text-emerald-600,
+.dark #main-application-frame .text-emerald-700,
+.dark #main-application-frame .text-emerald-800 { color: #6ee7b7; }
+
+.dark #main-application-frame .text-red-600,
+.dark #main-application-frame .text-red-700,
+.dark #main-application-frame .text-red-800 { color: #fca5a5; }
+
+.dark #main-application-frame .text-rose-700,
+.dark #main-application-frame .text-rose-800 { color: #fda4af; }
+
+.dark #main-application-frame .text-amber-700,
+.dark #main-application-frame .text-amber-800,
+.dark #main-application-frame .text-amber-900,
+.dark #main-application-frame .text-amber-705 { color: #fcd34d; }
+
+.dark #main-application-frame .text-indigo-600,
+.dark #main-application-frame .text-indigo-700,
+.dark #main-application-frame .text-indigo-800,
+.dark #main-application-frame .text-indigo-750 { color: #a5b4fc; }
+
+.dark #main-application-frame .text-teal-600,
+.dark #main-application-frame .text-teal-700,
+.dark #main-application-frame .text-teal-800,
+.dark #main-application-frame .text-teal-650,
+.dark #main-application-frame .text-teal-605 { color: #5eead4; }
+
+.dark #main-application-frame .text-blue-500,
+.dark #main-application-frame .text-blue-600 { color: #93c5fd; }
+
+.dark #main-application-frame .text-orange-700 { color: #fdba74; }
+
+/* Status borders */
+.dark #main-application-frame .border-emerald-100,
+.dark #main-application-frame .border-emerald-150,
+.dark #main-application-frame .border-emerald-200,
+.dark #main-application-frame .border-emerald-250 { border-color: rgba(16, 185, 129, 0.3); }
+
+.dark #main-application-frame .border-red-100,
+.dark #main-application-frame .border-red-200 { border-color: rgba(239, 68, 68, 0.3); }
+
+.dark #main-application-frame .border-amber-100,
+.dark #main-application-frame .border-amber-200 { border-color: rgba(245, 158, 11, 0.3); }
+
+.dark #main-application-frame .border-indigo-100,
+.dark #main-application-frame .border-indigo-200,
+.dark #main-application-frame .border-indigo-300 { border-color: rgba(99, 102, 241, 0.3); }
+
+.dark #main-application-frame .border-teal-200,
+.dark #main-application-frame .border-teal-300 { border-color: rgba(20, 184, 166, 0.3); }
+
+.dark #main-application-frame .border-orange-100 { border-color: rgba(249, 115, 22, 0.3); }
+
+.dark #main-application-frame .border-rose-200,
+.dark #main-application-frame .border-rose-300 { border-color: rgba(244, 63, 94, 0.3); }
+
+/* Selected cards (teal/indigo in wizards) */
+.dark #main-application-frame .bg-teal-50.text-teal-800 {
+  background-color: rgba(20, 184, 166, 0.16);
+  color: #99f6e4;
+}
+
+.dark #main-application-frame .bg-indigo-50.text-indigo-800,
+.dark #main-application-frame .bg-indigo-50.text-indigo-700 {
+  background-color: rgba(99, 102, 241, 0.16);
+  color: #c7d2fe;
+}
+
+/* Progress / chart tracks */
+.dark #main-application-frame .bg-slate-100.rounded-full,
+.dark #main-application-frame .bg-slate-150.rounded-full,
+.dark #main-application-frame .bg-slate-150.h-2,
+.dark #main-application-frame .bg-slate-150.h-1\.5 {
+  background-color: #34334a;
+}
+
+.dark #main-application-frame .bg-blue-50\/40,
+.dark #main-application-frame .bg-indigo-50\/40 {
+  background-color: rgba(99, 102, 241, 0.1);
+}
+
+.dark #main-application-frame .bg-urja-accent\/50 {
+  background-color: rgba(239, 127, 33, 0.1);
+}
+
+/* Inbox chat bubbles */
+.dark #main-application-frame .bg-white.rounded-tr-none {
+  background-color: var(--color-app-surface-raised);
+  color: var(--color-app-text);
+  border: 1px solid var(--color-app-border);
+}
+
+.dark #main-application-frame .bg-slate-900.rounded-tl-none {
+  background-color: #0d3d2f;
+  border: 1px solid rgba(20, 184, 166, 0.25);
+}
+
+/* Chat bubble tails */
+.dark #main-application-frame .bg-white.translate-x-1\.5 {
+  background-color: var(--color-app-surface-raised);
+}
+
+/* Overlays */
+.dark #main-application-frame .bg-slate-900\/40,
+.dark #main-application-frame .bg-slate-900\/50 {
+  background-color: rgba(0, 0, 0, 0.65);
+}
+
+/* Bulk selection bar */
+.dark #main-application-frame .bg-slate-900.text-white.rounded-xl {
+  background-color: #2a2540;
+  border-color: #45435f;
+}
+
+/* Header status pill */
+.dark #main-application-frame header .bg-slate-100.rounded-xl {
+  background-color: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.28);
+}
+
+.dark #main-application-frame header .font-semibold.text-slate-705 {
+  color: #6ee7b7;
+}
+
+/* Fix invalid / custom color tokens used in components */
+[class*="bg-indigo-650"],
+[class*="bg-indigo-655"] {
+  background-color: #4f46e5;
+}
+
+[class*="text-indigo-650"] { color: #4f46e5; }
+[class*="text-teal-650"] { color: #0d9488; }
+[class*="text-red-650"] { color: #dc2626; }
+
+.dark #main-application-frame [class*="text-indigo-650"] { color: #a5b4fc; }
+.dark #main-application-frame [class*="text-teal-650"] { color: #2dd4bf; }
+.dark #main-application-frame [class*="text-red-650"] { color: #f87171; }
+
+.dark #main-application-frame [class*="hover:text-indigo-650"]:hover { color: #a5b4fc; }
+.dark #main-application-frame [class*="hover:text-teal-650"]:hover { color: #2dd4bf; }
+
+.dark #main-application-frame [class*="hover:bg-teal-50"]:hover {
+  background-color: rgba(20, 184, 166, 0.14);
+}
+
+.dark #main-application-frame [class*="hover:bg-red-105"]:hover {
+  background-color: rgba(239, 68, 68, 0.18);
+}
+
+.dark #main-application-frame [class*="hover:bg-rose-50"]:hover {
+  background-color: rgba(244, 63, 94, 0.14);
+}
+
+/* Theme toggle in main header */
+.dark #main-application-frame .theme-toggle {
+  background-color: var(--color-app-surface-raised);
+  border-color: var(--color-app-border);
+}
+
+.dark #main-application-frame .theme-toggle button[aria-pressed='true'] {
+  background-color: var(--color-app-input-bg);
+  color: #ffb679;
+}
+
+.dark #main-application-frame .theme-toggle button[aria-pressed='false'] {
+  color: var(--color-app-text-muted);
+}
+
+/* Login page */
+.dark .login-form-card {
+  background-color: #1c1b2a;
+  border: 1px solid #34334a;
+}
+
+.dark .login-form-card .text-slate-800,
+.dark .login-form-card .text-slate-700,
+.dark .login-form-card .text-slate-600 {
+  color: #f4f4f8;
+}
+
+.dark .login-form-card .text-slate-500 {
+  color: #8b8aa3;
+}
+
+.dark .login-form-card input {
+  background-color: #12111d;
+  border-color: #34334a;
+  color: #f4f4f8;
+}
+
+.dark .login-page .theme-toggle {
+  background-color: rgb(255 255 255 / 0.08);
+  border-color: rgb(255 255 255 / 0.15);
+}
+
+.dark .login-page .theme-toggle button[aria-pressed='true'] {
+  background-color: rgb(255 255 255 / 0.15);
+  color: #fff;
+}
+
+.dark .login-page .theme-toggle button[aria-pressed='false'] {
+  color: rgb(203 213 225);
+}
+
+.dark #main-application-frame .bg-white\/75 {
+  background-color: rgba(37, 36, 54, 0.85);
+  border-color: var(--color-app-border);
+  color: var(--color-app-text-muted);
+}
+
+.dark #main-application-frame .border-white\/50 {
+  border-color: var(--color-app-border);
+}
+
+.dark #main-application-frame .shadow-sm,
+.dark #main-application-frame .shadow-xs {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.dark #main-application-frame .shadow-md {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.dark #main-application-frame .shadow-xl,
+.dark #main-application-frame .shadow-2xl {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* Settings / admin nav active item */
+.dark #main-application-frame .bg-indigo-50.text-indigo-700 {
+  background-color: rgba(99, 102, 241, 0.16);
+  color: #c7d2fe;
+}
+
+.dark #main-application-frame .bg-red-50.text-red-700 {
+  background-color: rgba(239, 68, 68, 0.14);
+  color: #fca5a5;
+}
+
+.dark #main-application-frame .bg-red-50.hover\:bg-red-100:hover {
+  background-color: rgba(239, 68, 68, 0.22);
+}
+
+.dark #main-application-frame .text-red-650 {
+  color: #f87171;
+}
+
+.dark #main-application-frame .bg-red-50.text-red-650 {
+  color: #f87171;
+}
+
+/* KPI card decorative circles */
+.dark #main-application-frame .bg-slate-50.rounded-full {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* Red unread badge */
+.dark #main-application-frame .bg-red-100.text-red-700 {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+/* Teal action buttons stay visible */
+.dark #main-application-frame .bg-teal-600,
+.dark #main-application-frame .bg-teal-600:hover {
+  background-color: #0d9488;
+}
+
+/* Focus rings on inputs */
+.dark #main-application-frame input:focus,
+.dark #main-application-frame textarea:focus,
+.dark #main-application-frame select:focus {
+  border-color: #ef7f21;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(239, 127, 33, 0.25);
+}
+
+.dark #main-application-frame .bg-slate-50\/50 {
+  background-color: var(--color-app-surface);
+}
+
+.dark #main-application-frame .bg-slate-200 {
+  background-color: #34334a;
+}
+
+.dark #main-application-frame .role-card {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Sidebar theme toggle */
+aside .theme-toggle {
+  background-color: rgb(255 255 255 / 0.08);
+  border-color: rgb(255 255 255 / 0.15);
+}
+
+aside .theme-toggle button[aria-pressed='true'] {
+  background-color: rgb(255 255 255 / 0.18);
+  color: #fff;
+}
+
+aside .theme-toggle button[aria-pressed='false'] {
+  color: rgb(148 163 184);
+}
+
+aside .theme-toggle button[aria-pressed='false']:hover {
+  color: #fff;
+}
