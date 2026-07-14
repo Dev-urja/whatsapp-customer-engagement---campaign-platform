@@ -18,7 +18,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_PASSWORD = 'Urja@2026!';
 
 async function runMigration() {
-  const migrationFiles = ['001_init.sql', '002_relax_user_role_check.sql', '003_whatsapp_message_id.sql'];
+  const migrationFiles = ['001_init.sql', '002_relax_user_role_check.sql', '003_whatsapp_message_id.sql', '004_chatbot_sessions.sql'];
   for (const file of migrationFiles) {
     const sql = fs.readFileSync(path.join(__dirname, 'migrations', file), 'utf-8');
     await pool.query(sql);
@@ -61,16 +61,119 @@ async function seedEmptySettings() {
 }
 
 async function seedEmptyChatbotFlow() {
-  const nodes = JSON.stringify([
+  const nodes = [
     { id: 'node-start', type: 'START', title: 'Start', position: { x: 80, y: 120 }, config: { messageText: '' } },
-  ]);
+    {
+      id: 'node-welcome',
+      type: 'MESSAGE',
+      title: 'Welcome',
+      position: { x: 280, y: 120 },
+      config: { messageText: 'Hello! Welcome to Urja Group. Thanks for messaging us on WhatsApp.' },
+    },
+    {
+      id: 'node-menu',
+      type: 'CHOICE',
+      title: 'Main menu',
+      position: { x: 500, y: 120 },
+      config: {
+        messageText: 'How can we help you today?',
+        choices: [
+          { label: 'Sales inquiry', nextNodeId: 'node-handoff' },
+          { label: 'Support', nextNodeId: 'node-handoff' },
+          { label: 'Just browsing', nextNodeId: 'node-end' },
+        ],
+      },
+    },
+    {
+      id: 'node-handoff',
+      type: 'HANDOFF',
+      title: 'Connect to agent',
+      position: { x: 720, y: 80 },
+      config: {
+        messageText: 'Connecting you with our team. Someone will reply shortly.',
+        routingStrategy: 'round-robin',
+      },
+    },
+    {
+      id: 'node-end',
+      type: 'END',
+      title: 'Goodbye',
+      position: { x: 720, y: 200 },
+      config: { messageText: 'No problem! Message us anytime if you need help.' },
+    },
+  ];
+  const edges = [
+    { id: 'edge-start-welcome', sourceId: 'node-start', targetId: 'node-welcome' },
+    { id: 'edge-welcome-menu', sourceId: 'node-welcome', targetId: 'node-menu' },
+  ];
   await pool.query(
     `INSERT INTO chatbot_flows (id, name, description, created_by, created_at, is_active, nodes, edges)
      VALUES ($1,$2,$3,$4,NOW(),true,$5,$6)
      ON CONFLICT (id) DO NOTHING`,
-    ['flow-1', 'Default Flow', '', 'u-1', nodes, '[]']
+    ['flow-1', 'Default Flow', 'Starter welcome + menu flow', 'u-1', JSON.stringify(nodes), JSON.stringify(edges)]
   );
-  console.log('✓ Seeded empty chatbot flow');
+  console.log('✓ Seeded default chatbot flow');
+}
+
+async function upgradeEmptyChatbotFlow() {
+  const row = await pool.query(`SELECT nodes FROM chatbot_flows WHERE id = 'flow-1' LIMIT 1`);
+  const nodes = row.rows[0]?.nodes;
+  const parsed = typeof nodes === 'string' ? JSON.parse(nodes) : nodes;
+  if (!Array.isArray(parsed) || parsed.length !== 1) return;
+
+  const starterNodes = [
+    { id: 'node-start', type: 'START', title: 'Start', position: { x: 80, y: 120 }, config: { messageText: '' } },
+    {
+      id: 'node-welcome',
+      type: 'MESSAGE',
+      title: 'Welcome',
+      position: { x: 280, y: 120 },
+      config: { messageText: 'Hello! Welcome to Urja Group. Thanks for messaging us on WhatsApp.' },
+    },
+    {
+      id: 'node-menu',
+      type: 'CHOICE',
+      title: 'Main menu',
+      position: { x: 500, y: 120 },
+      config: {
+        messageText: 'How can we help you today?',
+        choices: [
+          { label: 'Sales inquiry', nextNodeId: 'node-handoff' },
+          { label: 'Support', nextNodeId: 'node-handoff' },
+          { label: 'Just browsing', nextNodeId: 'node-end' },
+        ],
+      },
+    },
+    {
+      id: 'node-handoff',
+      type: 'HANDOFF',
+      title: 'Connect to agent',
+      position: { x: 720, y: 80 },
+      config: {
+        messageText: 'Connecting you with our team. Someone will reply shortly.',
+        routingStrategy: 'round-robin',
+      },
+    },
+    {
+      id: 'node-end',
+      type: 'END',
+      title: 'Goodbye',
+      position: { x: 720, y: 200 },
+      config: { messageText: 'No problem! Message us anytime if you need help.' },
+    },
+  ];
+  const starterEdges = [
+    { id: 'edge-start-welcome', sourceId: 'node-start', targetId: 'node-welcome' },
+    { id: 'edge-welcome-menu', sourceId: 'node-welcome', targetId: 'node-menu' },
+  ];
+
+  await pool.query(
+    `UPDATE chatbot_flows
+     SET description = $1, nodes = $2, edges = $3
+     WHERE id = 'flow-1'`,
+    ['Starter welcome + menu flow', JSON.stringify(starterNodes), JSON.stringify(starterEdges)]
+  );
+  console.log('✓ Upgraded empty chatbot flow to starter template');
 }
 
 async function main() {
@@ -86,6 +189,7 @@ async function main() {
     await seedAdminUser();
     await seedEmptySettings();
     await seedEmptyChatbotFlow();
+    await upgradeEmptyChatbotFlow();
     console.log('\n✅ Seed complete (no sample business data).');
   } catch (err) {
     console.error('❌ Seed failed:', err);

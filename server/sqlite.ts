@@ -60,6 +60,7 @@ export async function initSqlite(): Promise<void> {
     db = new SQL.Database(fs.readFileSync(DB_PATH));
     ensureRolesSchema();
     ensureWhatsAppSchema();
+    ensureChatbotSessionsSchema();
   } else {
     db = new SQL.Database();
     runMigration();
@@ -215,6 +216,18 @@ function ensureWhatsAppSchema() {
   }
 }
 
+function ensureChatbotSessionsSchema() {
+  if (!db) return;
+  db.run(`
+    CREATE TABLE IF NOT EXISTS chatbot_sessions (
+      conversation_id TEXT PRIMARY KEY,
+      current_node_id TEXT NOT NULL,
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+  `);
+  save();
+}
+
 function ensureRolesSchema() {
   if (!db) return;
   db.run(`
@@ -269,10 +282,52 @@ async function seedData() {
 
   const nodes = JSON.stringify([
     { id: 'node-start', type: 'START', title: 'Start', position: { x: 80, y: 120 }, config: { messageText: '' } },
+    {
+      id: 'node-welcome',
+      type: 'MESSAGE',
+      title: 'Welcome',
+      position: { x: 280, y: 120 },
+      config: { messageText: 'Hello! Welcome to Urja Group. Thanks for messaging us on WhatsApp.' },
+    },
+    {
+      id: 'node-menu',
+      type: 'CHOICE',
+      title: 'Main menu',
+      position: { x: 500, y: 120 },
+      config: {
+        messageText: 'How can we help you today?',
+        choices: [
+          { label: 'Sales inquiry', nextNodeId: 'node-handoff' },
+          { label: 'Support', nextNodeId: 'node-handoff' },
+          { label: 'Just browsing', nextNodeId: 'node-end' },
+        ],
+      },
+    },
+    {
+      id: 'node-handoff',
+      type: 'HANDOFF',
+      title: 'Connect to agent',
+      position: { x: 720, y: 80 },
+      config: {
+        messageText: 'Connecting you with our team. Someone will reply shortly.',
+        routingStrategy: 'round-robin',
+      },
+    },
+    {
+      id: 'node-end',
+      type: 'END',
+      title: 'Goodbye',
+      position: { x: 720, y: 200 },
+      config: { messageText: 'No problem! Message us anytime if you need help.' },
+    },
+  ]);
+  const edges = JSON.stringify([
+    { id: 'edge-start-welcome', sourceId: 'node-start', targetId: 'node-welcome' },
+    { id: 'edge-welcome-menu', sourceId: 'node-welcome', targetId: 'node-menu' },
   ]);
   db.run(
     `INSERT OR IGNORE INTO chatbot_flows (id, name, description, created_by, is_active, nodes, edges) VALUES (?,?,?,?,?,?,?)`,
-    ['flow-1', 'Default Flow', '', 'u-1', 1, nodes, '[]']
+    ['flow-1', 'Default Flow', 'Starter welcome + menu flow', 'u-1', 1, nodes, edges]
   );
 
   console.log('✓ Database initialized (no sample data)');

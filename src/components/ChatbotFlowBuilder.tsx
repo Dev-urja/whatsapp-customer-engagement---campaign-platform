@@ -1,15 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChatbotFlow, ChatbotNode, ChatbotNodeType } from '../types';
 import { Plus, Check, Settings, Trash2, ArrowUpRight, HelpCircle, Bot, AlertCircle, Save, Sliders, Layout, Network, RefreshCw } from 'lucide-react';
 
 interface ChatbotFlowBuilderProps {
   initialFlow: ChatbotFlow;
-  onSaveFlow: (updatedFlow: ChatbotFlow) => void;
+  botEnabled?: boolean;
+  onSaveFlow: (updatedFlow: ChatbotFlow) => void | Promise<void>;
 }
 
-export default function ChatbotFlowBuilder({ initialFlow, onSaveFlow }: ChatbotFlowBuilderProps) {
+export default function ChatbotFlowBuilder({ initialFlow, botEnabled = false, onSaveFlow }: ChatbotFlowBuilderProps) {
   const [activeFlow, setActiveFlow] = useState<ChatbotFlow>(initialFlow);
   const [selectedNodeId, setSelectedNodeId] = useState<string>('node-start');
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setActiveFlow(initialFlow);
+    setSelectedNodeId(initialFlow.nodes[0]?.id || 'node-start');
+  }, [initialFlow]);
   
   // Drag and coordinate offsets simulation state
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
@@ -302,7 +309,8 @@ export default function ChatbotFlowBuilder({ initialFlow, onSaveFlow }: ChatbotF
               <span>● Connector edges: <span className="font-semibold text-slate-800">{activeFlow.edges.length} paths</span></span>
             </div>
             <span className="text-emerald-600 font-semibold flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Active triggered live inside WA API
+              <span className={`w-1.5 h-1.5 rounded-full ${botEnabled ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`} />
+              {botEnabled ? 'Bot enabled — flow runs on incoming WhatsApp messages' : 'Bot disabled — enable in Settings → WhatsApp API'}
             </span>
           </div>
 
@@ -421,12 +429,22 @@ export default function ChatbotFlowBuilder({ initialFlow, onSaveFlow }: ChatbotF
             )}
 
             <button
-              onClick={() => {
-                alert(`Chatbot flows successfully persistent compiled over local storage! Trigger rules are fully active.`);
+              type="button"
+              disabled={isSaving}
+              onClick={async () => {
+                setIsSaving(true);
+                try {
+                  await onSaveFlow({ ...activeFlow, isActive: true });
+                  alert('Chatbot flow saved and activated.');
+                } catch (err: any) {
+                  alert(err.message || 'Failed to save flow');
+                } finally {
+                  setIsSaving(false);
+                }
               }}
-              className="bg-urja-primary hover:bg-urja-primary/95 text-white font-semibold p-3 rounded-xl w-full text-center transition-all flex items-center justify-center gap-2 shadow-xs"
+              className="bg-urja-primary hover:bg-urja-primary/95 text-white font-semibold p-3 rounded-xl w-full text-center transition-all flex items-center justify-center gap-2 shadow-xs disabled:opacity-60"
             >
-              <Save className="w-4 h-4" /> Save & Activate Flow
+              <Save className="w-4 h-4" /> {isSaving ? 'Saving…' : 'Save & Activate Flow'}
             </button>
           </div>
 

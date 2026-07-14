@@ -41,6 +41,14 @@ app.get('/api/health', async (_req, res) => {
   });
 });
 
+// Local/dev: port 3001 is API-only — send browsers to the Vite app
+if (!isProduction) {
+  app.get('/', (_req, res) => {
+    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    res.redirect(302, appUrl);
+  });
+}
+
 // Meta webhook — must be public (no JWT)
 app.use('/api/webhook', webhookRoutes);
 

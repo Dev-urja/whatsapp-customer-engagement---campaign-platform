@@ -1,7 +1,6 @@
 import { query, queryOne, exec } from '../db';
 import { normalizePhone } from './phone';
-import { sendTextMessage } from './client';
-import { loadWhatsAppSettings } from './settings';
+import { processChatbotMessage } from './chatbotEngine';
 
 type WaStatus = 'sent' | 'delivered' | 'read' | 'failed';
 
@@ -73,32 +72,15 @@ async function updateMessageStatus(whatsappMessageId: string, status: WaStatus) 
   );
 }
 
-async function maybeAutoReply(conversationId: string, customerName: string, content: string) {
-  const settings = await loadWhatsAppSettings();
-  if (!settings?.botEnabled) return;
-
-  const customer = await queryOne<any>(
-    `SELECT c.phone FROM conversations conv
-     JOIN customers c ON c.id = conv.customer_id
-     WHERE conv.id = $1`,
-    [conversationId]
-  );
-  if (!customer?.phone) return;
-
-  const reply =
-    `Hi${customerName ? ` ${customerName}` : ''}, thanks for your message. Our team will respond shortly.`;
-
+async function maybeAutoReply(
+  conversationId: string,
+  customer: any,
+  content: string
+) {
   try {
-    const { messageId } = await sendTextMessage(customer.phone, reply);
-    const botId = `cm-bot-${Date.now()}`;
-    await queryOne(
-      `INSERT INTO conversation_messages (id, conversation_id, sender, content, whatsapp_message_id, status)
-       VALUES ($1,$2,'bot',$3,$4,'sent') RETURNING *`,
-      [botId, conversationId, reply, messageId || null]
-    );
-    await exec('UPDATE conversations SET last_message_at = NOW() WHERE id = $1', [conversationId]);
+    await processChatbotMessage(conversationId, customer, content);
   } catch (err) {
-    console.error('Auto-reply failed:', err);
+    console.error('Chatbot processing failed:', err);
   }
 }
 
@@ -140,7 +122,7 @@ export async function processWhatsAppWebhook(body: any) {
 
           if (text) {
             await storeInboundMessage(conversation.id, text, message.id);
-            await maybeAutoReply(conversation.id, customer.name, text);
+            await maybeAutoReply(conversation.id, customer, text);
           }
         }
       }

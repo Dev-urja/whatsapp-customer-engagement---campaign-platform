@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Key, FileSpreadsheet, Plus, Save, RefreshCw, MessageSquare, Plug, X } from 'lucide-react';
 import { WhatsAppTemplate, SystemSettings, AppRole, User, Campaign } from '../../types';
 import { hasPermission } from '../../permissions';
@@ -42,6 +42,10 @@ export default function SettingsPanel({
   const [isGenerating, setIsGenerating] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [isSyncingTemplates, setIsSyncingTemplates] = useState(false);
+
+  useEffect(() => {
+    setLocalSettings({ ...settings });
+  }, [settings]);
 
   const navItems = ([
     { id: 'integration' as SettingsSection, label: 'WhatsApp API', icon: Plug, show: true },
@@ -211,6 +215,25 @@ export default function SettingsPanel({
                   onChange={e => setLocalSettings({ ...localSettings, accessToken: e.target.value })}
                   className="w-full text-sm px-3 py-2 border border-slate-200 rounded-lg disabled:bg-slate-50 font-mono"
                 />
+              </div>
+
+              <div className="border-t border-slate-100 pt-4 space-y-3">
+                <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+                  <div>
+                    <p className="text-sm font-medium text-slate-700">Chatbot auto-replies</p>
+                    <p className="text-xs text-slate-500">Run the active flow from Chatbot Builder on inbound WhatsApp messages</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      disabled={!canEditCredentials}
+                      checked={localSettings.botEnabled}
+                      onChange={e => setLocalSettings({ ...localSettings, botEnabled: e.target.checked })}
+                      className="sr-only peer"
+                    />
+                    <div className="w-10 h-5 bg-slate-200 rounded-full peer peer-checked:bg-urja-primary peer-disabled:opacity-50 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5" />
+                  </label>
+                </div>
               </div>
 
               <div className="border-t border-slate-100 pt-4 space-y-3">

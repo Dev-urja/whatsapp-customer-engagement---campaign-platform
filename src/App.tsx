@@ -531,6 +531,7 @@ export default function App() {
           {activeMenu === 'chatbot' && chatbotFlow && canAccessMenu(currentUser.role, 'chatbot', roles) && (
             <ChatbotFlowBuilder
               initialFlow={chatbotFlow}
+              botEnabled={settings?.botEnabled ?? false}
               onSaveFlow={handleSaveFlow}
             />
           )}

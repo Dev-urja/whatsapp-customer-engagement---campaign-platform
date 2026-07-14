@@ -163,6 +163,11 @@ router.put('/:id', async (req: AuthRequest, res: Response) => {
       [salesUserId, unreadCount, req.params.id]
     );
     if (!row) return res.status(404).json({ message: 'Conversation not found' });
+
+    if (salesUserId) {
+      await exec('DELETE FROM chatbot_sessions WHERE conversation_id = $1', [req.params.id]);
+    }
+
     res.json(mapConversation(row));
   } catch (err) {
     console.error(err);
